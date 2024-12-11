@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Cliente</title>
+</head>
+<body>
+  <h2>Cliente WebSocket</h2>
+  <textarea id="messageInput" placeholder="Escribe un mensaje..." rows="4" cols="50"></textarea>
+  <button onclick="sendMessage()">Enviar</button>
+  <h3>Mensajes recibidos:</h3>
+  <div id="messages"></div>
+
+  <script>
+    // Conectar al servidor WebSocket
+    const socket = new WebSocket('ws://localhost:3030');
+    let isConnected = false;  // Variable para verificar la conexión
+
+    // Cuando el cliente se conecta
+    socket.onopen = function(event) {
+      console.log('Conectado al servidor WebSocket');
+      isConnected = true;  // Establecer la conexión como abierta
+    };
+
+    // Cuando el cliente recibe un mensaje
+    socket.onmessage = function(event) {
+      const message = event.data;
+      console.log('Mensaje recibido:', message);
+      
+      // Mostrar el mensaje en la página
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML += `<p>${message}</p>`;
+    };
+
+    // Cuando el cliente se desconecta
+    socket.onclose = function(event) {
+      console.log('Desconectado del servidor WebSocket');
+      isConnected = false;  // Restablecer la conexión como cerrada
+    };
+
+    // Enviar un mensaje al servidor solo si está conectado
+    function sendMessage() {
+      const message = document.getElementById('messageInput').value;
+
+      // Verificar si la conexión WebSocket está abierta antes de enviar
+      if (isConnected) {
+        socket.send(message);
+      } else {
+        console.log('No se puede enviar el mensaje, WebSocket aún está conectando...');
+      }
+    }
+  </script>
+</body>
+</html>
